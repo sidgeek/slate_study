@@ -88,6 +88,24 @@ export function BasicEditor() {
 
   return (
     <div className='slate-Container'>
+      <div>
+        <button
+          onMouseDown={event => {
+            event.preventDefault()
+            CustomEditor.toggleBoldMark(editor)
+          }}
+        >
+          Bold
+        </button>
+        <button
+          onMouseDown={event => {
+            event.preventDefault()
+            CustomEditor.toggleCodeBlock(editor)
+          }}
+        >
+          Code Block
+        </button>
+      </div>
       <Slate editor={editor} initialValue={initialValue}>
         <Editable
           className='input-area'
