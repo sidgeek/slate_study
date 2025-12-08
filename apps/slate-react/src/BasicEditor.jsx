@@ -47,9 +47,13 @@ export function BasicEditor() {
               // Prevent the "`" from being inserted by default.
               event.preventDefault()
               // Otherwise, set the currently selected blocks type to "code".
+              const [match] = Editor.nodes(editor, {
+                match: n => n.type === 'code',
+              })
+
               Transforms.setNodes(
                 editor,
-                { type: 'code' },
+                { type: match ? 'paragraph' : 'code' },
                 { match: n => Element.isElement(n) && Editor.isBlock(editor, n) }
               )
             }
