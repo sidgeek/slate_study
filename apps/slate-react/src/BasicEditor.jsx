@@ -37,10 +37,32 @@ const CustomEditor = {
   },
 }
 
+const withPlaceholders = (editor) => {
+  const { isInline, isVoid } = editor
+  editor.isInline = element => element.type === 'slot' ? true : isInline(element)
+  editor.isVoid = element => element.type === 'slot' ? true : isVoid(element)
+  return editor
+}
+
+const splitTextWithPlaceholder = (text) => {
+  const match = /\[[^\]]*\]/.exec(text)
+  if (!match) return [{ text }]
+  const inner = match[0].slice(1, -1)
+  const start = match.index
+  const end = start + match[0].length
+  const before = text.slice(0, start)
+  const after = text.slice(end)
+  return [
+    { text: before },
+    { type: 'slot', placeholder: inner, children: [{ text: '' }] },
+    { text: after },
+  ]
+}
+
 const initialValue = [
   {
     type: 'paragraph',
-    children: [{ text: 'A line of text in a paragraph.' }],
+    children: splitTextWithPlaceholder('A line of text in a [test] code block.'),
   },
 ]
 
@@ -57,6 +79,15 @@ const DefaultElement = (props) => {
   return <p {...props.attributes}>{props.children}</p>
 }
 
+const InlineInputElement = (props) => {
+  return (
+    <span {...props.attributes} contentEditable={false}>
+      <input className='inline-input' placeholder={props.element.placeholder} style={{ width: 120 }} />
+      {props.children}
+    </span>
+  )
+}
+
 // Define a React component to render leaves with bold text.
 const Leaf = props => {
   return (
@@ -70,12 +101,14 @@ const Leaf = props => {
 }
 
 export function BasicEditor() {
-  const [editor] = useState(() => withReact(createEditor()))
+  const [editor] = useState(() => withPlaceholders(withReact(createEditor())))
 
   const renderElement = useCallback(props => {
     switch (props.element.type) {
       case 'code':
         return <CodeElement {...props} />
+      case 'slot':
+        return <InlineInputElement {...props} />
       default:
         return <DefaultElement {...props} />
     }
