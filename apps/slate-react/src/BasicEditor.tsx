@@ -28,7 +28,12 @@ export function BasicEditor() {
     <Slate editor={editor} initialValue={initialValue}>
       <Editable
         onKeyDown={event => {
-          console.log(event.key)
+           if (event.key === '&') {
+            // Prevent the ampersand character from being inserted.
+            event.preventDefault()
+            // Execute the `insertText` method when the event occurs.
+            editor.insertText('and')
+          }
         }}
       />
     </Slate>
