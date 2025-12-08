@@ -26,7 +26,11 @@ export function BasicEditor() {
 
   return (
     <Slate editor={editor} initialValue={initialValue}>
-      <Editable />
+      <Editable
+        onKeyDown={event => {
+          console.log(event.key)
+        }}
+      />
     </Slate>
   )
 }
