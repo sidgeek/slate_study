@@ -3,6 +3,47 @@ import { createEditor, Editor, Element, Transforms } from 'slate'
 import { Editable, Slate, withReact } from 'slate-react'
 // import { ReactEditor } from 'slate-react'
 
+// Define our own custom set of helpers.
+const CustomEditor = {
+  isBoldMarkActive(editor) {
+    const marks = Editor.marks(editor)
+    return marks ? marks.bold === true : false
+  },
+
+  isCodeBlockActive(editor) {
+    const [match] = Editor.nodes(editor, {
+      match: n => n.type === 'code',
+    })
+
+    return !!match
+  },
+
+  toggleBoldMark(editor) {
+    const isActive = CustomEditor.isBoldMarkActive(editor)
+    if (isActive) {
+      Editor.removeMark(editor, 'bold')
+    } else {
+      Editor.addMark(editor, 'bold', true)
+    }
+  },
+
+  toggleCodeBlock(editor) {
+    const isActive = CustomEditor.isCodeBlockActive(editor)
+    Transforms.setNodes(
+      editor,
+      { type: isActive ? null : 'code' },
+      { match: n => Element.isElement(n) && Editor.isBlock(editor, n) }
+    )
+  },
+}
+
+const initialValue = [
+  {
+    type: 'paragraph',
+    children: [{ text: 'A line of text in a paragraph.' }],
+  },
+]
+
 // Define a React component renderer for our code blocks.
 const CodeElement = (props) => {
   return (
@@ -29,13 +70,6 @@ const Leaf = props => {
 }
 
 export function BasicEditor() {
-  const initialValue = [
-    {
-      type: 'paragraph',
-      children: [{ text: 'A line of text in a paragraph.' }],
-    },
-  ]
-
   const [editor] = useState(() => withReact(createEditor()))
 
   const renderElement = useCallback(props => {
@@ -68,23 +102,14 @@ export function BasicEditor() {
               // When "`" is pressed, keep our existing code block logic.
               case '`': {
                 event.preventDefault()
-                const [match] = Editor.nodes(editor, {
-                  match: n => n.type === 'code',
-                })
-                Transforms.setNodes(
-                  editor,
-                  { type: match ? 'paragraph' : 'code' },
-                  {
-                    match: n => Element.isElement(n) && Editor.isBlock(editor, n),
-                  }
-                )
+                CustomEditor.toggleCodeBlock(editor)
                 break
               }
 
               // When "B" is pressed, bold the text in the selection.
               case 'b': {
                 event.preventDefault()
-                Editor.addMark(editor, 'bold', true)
+                CustomEditor.toggleBoldMark(editor)
                 break
               }
             }
