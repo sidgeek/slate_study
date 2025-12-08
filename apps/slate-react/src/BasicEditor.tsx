@@ -25,6 +25,8 @@ export function BasicEditor() {
   const [editor] = useState(() => withReact(createEditor()))
 
   return (
-    <Slate editor={editor} initialValue={initialValue} children={<Editable />} />
+    <Slate editor={editor} initialValue={initialValue}>
+      <Editable />
+    </Slate>
   )
 }
