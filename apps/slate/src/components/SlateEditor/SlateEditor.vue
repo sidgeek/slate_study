@@ -110,6 +110,7 @@ const initEditor = (inputText, _isFocus = true) => {
     return;
   }
   // 有值的情况下，转换编辑器的内容（识别插槽区域）
+  console.log(inputText, ">>> initText");
   editor.value.children = transformInputText(inputText, () => false);
   nextTick(() => {
     if (!_isFocus) return;

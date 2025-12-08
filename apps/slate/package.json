@@ -2,16 +2,6 @@
   "name": "slate",
   "version": "0.0.1",
   "private": true,
-  "license": "MIT",
-  "author": "shilili <18262272638@163.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+https://example.com/your-org/slate.git"
-  },
-  "bugs": {
-    "url": "https://example.com/your-org/slate/issues"
-  },
-  "homepage": "https://example.com/your-org/slate#readme",
   "type": "module",
   "scripts": {
     "dev": "vite",
