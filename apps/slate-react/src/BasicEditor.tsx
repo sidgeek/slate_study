@@ -1,29 +1,30 @@
-import React, { useMemo, useState, useCallback } from 'react'
-import { createEditor, Descendant } from 'slate'
-import { Slate, Editable, withReact } from 'slate-react'
-import { withHistory } from 'slate-history'
+import { useState } from 'react'
+import { BaseEditor, createEditor, Descendant } from 'slate'
+import { Editable, Slate, withReact } from 'slate-react'
+import { ReactEditor } from 'slate-react'
+
+type CustomElement = { type: 'paragraph'; children: CustomText[] }
+type CustomText = { text: string }
+
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: BaseEditor & ReactEditor
+    Element: CustomElement
+    Text: CustomText
+  }
+}
 
 export function BasicEditor() {
-  const editor = useMemo(() => withHistory(withReact(createEditor())), [])
-  const [value, setValue] = useState<Descendant[]>([
-    { children: [{ text: 'Hello Slate React!' }] } as Descendant,
-  ])
+  const initialValue = [
+    {
+      type: 'paragraph',
+      children: [{ text: 'A line of text in a paragraph.' }],
+    },
+  ] as Descendant[]
 
-  const renderElement = useCallback((props: any) => {
-    const { element, attributes, children } = props
-    if ((element as any).type === 'paragraph') {
-      return <p {...attributes}>{children}</p>
-    }
-    return <span {...attributes}>{children}</span>
-  }, [])
+  const [editor] = useState(() => withReact(createEditor()))
 
   return (
-    <Slate editor={editor} initialValue={value} onChange={setValue}>
-      <Editable
-        renderElement={renderElement}
-        placeholder="在这里输入..."
-        spellCheck={false}
-      />
-    </Slate>
+    <Slate editor={editor} initialValue={initialValue} children={<Editable />} />
   )
 }
