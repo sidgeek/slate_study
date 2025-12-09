@@ -1,5 +1,5 @@
 import React from 'react'
-import Tiptap from './TipTap'
+import Tiptap from './Tiptap'
 
 export default function App() {
   return (
