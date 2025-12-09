@@ -1,9 +1,10 @@
 import React from 'react'
+import Tiptap from './TipTap'
 
 export default function App() {
   return (
     <div style={{ padding: 16 }}>
-      Hello World
+      <Tiptap />
     </div>
   )
 }
