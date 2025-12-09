@@ -45,24 +45,31 @@ const withPlaceholders = (editor) => {
 }
 
 const splitTextWithPlaceholder = (text) => {
-  const match = /\[[^\]]*\]/.exec(text)
-  if (!match) return [{ text }]
-  const inner = match[0].slice(1, -1)
-  const start = match.index
-  const end = start + match[0].length
-  const before = text.slice(0, start)
-  const after = text.slice(end)
-  return [
-    { text: before },
-    { type: 'slot', placeholder: inner, children: [{ text: '' }] },
-    { text: after },
-  ]
+  const result = []
+  const regex = /\[[^\]]*\]/g
+  let lastIndex = 0
+  let match
+  while ((match = regex.exec(text)) !== null) {
+    const start = match.index
+    const end = start + match[0].length
+    const before = text.slice(lastIndex, start)
+    result.push({ text: before })
+    const inner = match[0].slice(1, -1)
+    result.push({ type: 'slot', placeholder: inner, children: [{ text: '' }] })
+    lastIndex = end
+  }
+  if (result.length === 0) {
+    return [{ text }]
+  }
+  const after = text.slice(lastIndex)
+  result.push({ text: after })
+  return result
 }
 
 const initialValue = [
   {
     type: 'paragraph',
-    children: splitTextWithPlaceholder('A line of text in a [test] code block.'),
+    children: splitTextWithPlaceholder('A line of text in a [test] code [test2] block.'),
   },
 ]
 
